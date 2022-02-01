@@ -15,22 +15,38 @@ class StickyHeaderController(
     private val context: Context
 ) : EpoxyController(), StickyHeaderCallbacks {
 
+    var items = (0 until 100).map { Pair(it, (it % 5) == 0) }
+        set(value) {
+            field = value
+            requestModelBuild()
+        }
+
+
     override fun buildModels() {
-        for (i in 0 until 100) {
-            when {
-                i % 5 == 0 -> stickyItemEpoxyHolder {
-                    id("sticky-header $i")
-                    title("Sticky header $i")
+        items.forEach {
+            if (it.second) {
+                stickyItemEpoxyHolder {
+                    id("sticky-header ${it.first}")
+                    title("Sticky header ${it.first}")
                     listener {
-                        Toast.makeText(this@StickyHeaderController.context, "clicked", Toast.LENGTH_LONG).show()
+                        this@StickyHeaderController.items -= it
+                        Toast.makeText(
+                            this@StickyHeaderController.context,
+                            "clicked",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
-                else -> itemEpoxyHolder {
-                    id("view holder $i")
-                    title("this is a View Holder item")
+            } else { itemEpoxyHolder {
+                    id("view holder ${it.first}")
+                    title("this is a View Holder item ${it.first}")
                     listener {
-                        Toast.makeText(this@StickyHeaderController.context, "clicked", Toast.LENGTH_LONG)
-                            .show()
+                        this@StickyHeaderController.items -= it
+                        Toast.makeText(
+                            this@StickyHeaderController.context,
+                            "clicked",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
