@@ -3,9 +3,16 @@ package com.airbnb.epoxy.stickyheader
 import androidx.recyclerview.widget.RecyclerView
 
 class HeaderPositions(
-    val list: MutableList<Int> = mutableListOf(),
+    /**
+     * Sorted [headerPositions] of all header positions. It should never contain numbers:
+     *  - less than 0,
+     *  - greater than or equal to [Delegate.itemCount]
+     *  - duplicates
+     */
+    private val headerPositions: MutableList<Int> = mutableListOf(),
+
     val delegate: Delegate
-) : RecyclerView.AdapterDataObserver(), Collection<Int> by list {
+) : RecyclerView.AdapterDataObserver(), Collection<Int> by headerPositions {
 
     interface Delegate {
 
@@ -17,43 +24,26 @@ class HeaderPositions(
     }
 
     operator fun get(index: Int): Int {
-        return list[index]
+        return headerPositions[index]
     }
 
-    fun clear() = list.clear()
-
-    /**
-     * Finds the header index of `position` in `headerPositions`.
-     */
-    fun indexOf(position: Int): Int {
-        var low = 0
-        var high = list.size - 1
-        while (low <= high) {
-            val middle = (low + high) / 2
-            when {
-                list[middle] > position -> high = middle - 1
-                list[middle] < position -> low = middle + 1
-                else -> return middle
-            }
-        }
-        return -1
-    }
+    fun clear() = headerPositions.clear()
 
     override fun contains(element: Int): Boolean {
         return indexOf(element) != -1
     }
 
     /**
-     * Finds the header index of `position` or the one before it in `headerPositions`.
+     * Finds the header index of [position] in [headerPositions] or -1 if it is not found.
      */
-    fun indexOfOrBefore(position: Int): Int {
+    fun indexOf(position: Int): Int {
         var low = 0
-        var high = list.size - 1
+        var high = headerPositions.size - 1
         while (low <= high) {
             val middle = (low + high) / 2
             when {
-                list[middle] > position -> high = middle - 1
-                middle < list.size - 1 && list[middle + 1] <= position -> low = middle + 1
+                headerPositions[middle] > position -> high = middle - 1
+                headerPositions[middle] < position -> low = middle + 1
                 else -> return middle
             }
         }
@@ -61,16 +51,34 @@ class HeaderPositions(
     }
 
     /**
-     * Finds the header index of `position` or the one next to it in `headerPositions`.
+     * Finds the header index of [position] in [headerPositions] or the one before it if not found
      */
-    fun indexOfOrNext(position: Int): Int {
+    fun indexOfOrBefore(position: Int): Int {
         var low = 0
-        var high = list.size - 1
+        var high = headerPositions.size - 1
         while (low <= high) {
             val middle = (low + high) / 2
             when {
-                middle > 0 && list[middle - 1] >= position -> high = middle - 1
-                list[middle] < position -> low = middle + 1
+                headerPositions[middle] > position -> high = middle - 1
+                middle < headerPositions.size - 1 && headerPositions[middle + 1] <= position -> low =
+                    middle + 1
+                else -> return middle
+            }
+        }
+        return -1
+    }
+
+    /**
+     * Finds the header index of [position] or if not found, the one after it in [headerPositions].
+     */
+    fun indexOfOrNext(position: Int): Int {
+        var low = 0
+        var high = headerPositions.size - 1
+        while (low <= high) {
+            val middle = (low + high) / 2
+            when {
+                middle > 0 && headerPositions[middle - 1] >= position -> high = middle - 1
+                headerPositions[middle] < position -> low = middle + 1
                 else -> return middle
             }
         }
@@ -79,12 +87,12 @@ class HeaderPositions(
 
     override fun onChanged() {
         // There's no hint at what changed, so go through the adapter.
-        list.clear()
+        headerPositions.clear()
         val itemCount = delegate.itemCount()
         for (i in 0 until itemCount) {
             val isSticky = delegate.isStickyHeader(i)
             if (isSticky) {
-                list.add(i)
+                headerPositions.add(i)
             }
         }
 
@@ -92,13 +100,13 @@ class HeaderPositions(
     }
 
     override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-        var headerCount = list.size
+        var headerCount = headerPositions.size
         if (headerCount > 0) {
             // Remove headers.
             for (i in positionStart + itemCount - 1 downTo positionStart) {
                 val index = indexOf(i)
                 if (index != -1) {
-                    list.removeAt(index)
+                    headerPositions.removeAt(index)
                     headerCount--
                 }
             }
@@ -108,7 +116,7 @@ class HeaderPositions(
             // Shift headers below up.
             var i = indexOfOrNext(positionStart + itemCount)
             while (i != -1 && i < headerCount) {
-                list[i] = list[i] - itemCount
+                headerPositions[i] = headerPositions[i] - itemCount
                 i++
             }
         }
@@ -117,16 +125,16 @@ class HeaderPositions(
     override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
         // Shift moved headers by toPosition - fromPosition.
         // Shift headers in-between by -itemCount (reverse if upwards).
-        val headerCount = list.size
+        val headerCount = headerPositions.size
         if (headerCount > 0) {
             if (fromPosition < toPosition) {
                 var i = indexOfOrNext(fromPosition)
                 while (i != -1 && i < headerCount) {
-                    val headerPos = list[i]
+                    val headerPos = headerPositions[i]
                     if (headerPos >= fromPosition && headerPos < fromPosition + itemCount) {
-                        list[i] = headerPos + (toPosition - fromPosition)
+                        headerPositions[i] = headerPos + (toPosition - fromPosition)
                     } else if (headerPos >= fromPosition + itemCount && headerPos <= toPosition) {
-                        list[i] = headerPos - itemCount
+                        headerPositions[i] = headerPos - itemCount
                     } else {
                         break
                     }
@@ -135,13 +143,13 @@ class HeaderPositions(
             } else {
                 var i = indexOfOrNext(toPosition)
                 loop@ while (i != -1 && i < headerCount) {
-                    val headerPos = list[i]
+                    val headerPos = headerPositions[i]
                     when {
                         headerPos >= fromPosition && headerPos < fromPosition + itemCount -> {
-                            list[i] = headerPos + (toPosition - fromPosition)
+                            headerPositions[i] = headerPos + (toPosition - fromPosition)
                         }
                         headerPos in toPosition..fromPosition -> {
-                            list[i] = headerPos + itemCount
+                            headerPositions[i] = headerPos + itemCount
                         }
                         else -> break@loop
                     }
@@ -149,16 +157,16 @@ class HeaderPositions(
                 }
             }
         }
-        list.sort()
+        headerPositions.sort()
     }
 
     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
         // Shift headers below down.
-        val headerCount = list.size
+        val headerCount = headerPositions.size
         if (headerCount > 0) {
             var i = indexOfOrNext(positionStart)
             while (i != -1 && i < headerCount) {
-                list[i] = list[i] + itemCount
+                headerPositions[i] = headerPositions[i] + itemCount
                 i++
             }
         }
@@ -169,9 +177,9 @@ class HeaderPositions(
             if (isSticky) {
                 val headerIndex = indexOfOrNext(i)
                 if (headerIndex != -1) {
-                    list.add(headerIndex, i)
+                    headerPositions.add(headerIndex, i)
                 } else {
-                    list.add(i)
+                    headerPositions.add(i)
                 }
             }
         }
