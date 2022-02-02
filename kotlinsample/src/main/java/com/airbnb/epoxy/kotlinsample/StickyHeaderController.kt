@@ -20,7 +20,8 @@ class StickyHeaderController(
     private val context: Context
 ) : EpoxyController(), StickyHeaderCallbacks {
 
-    var items = (0 until 100).map { Item(it) }
+    var nextId = 100
+    var items = (0 until nextId).map { Item(it) }
         set(value) {
             field = value
             requestModelBuild()
@@ -28,6 +29,16 @@ class StickyHeaderController(
 
     fun reset() {
         items = (0 until 100).map { Item(it) }
+        nextId = 100
+    }
+
+    fun shuffle() {
+        items = items.shuffled()
+    }
+
+    fun remove(item: Item) {
+        // Removing an item is fine but trying to add at the same time will crash
+        items = items - item //+ Item(nextId++)
     }
 
     override fun buildModels() {
@@ -40,12 +51,11 @@ class StickyHeaderController(
             }
         }
 
-
         itemEpoxyHolder {
             id("shuffle-items")
             title("Shuffle")
             listener {
-                this@StickyHeaderController.items = this@StickyHeaderController.items.shuffled()
+                this@StickyHeaderController.shuffle()
             }
         }
 
@@ -55,12 +65,7 @@ class StickyHeaderController(
                     id("sticky-header ${it.id}")
                     title("Sticky header ${it.id}")
                     listener {
-                        this@StickyHeaderController.items -= it
-                        Toast.makeText(
-                            this@StickyHeaderController.context,
-                            "clicked",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        this@StickyHeaderController.remove(it)
                     }
                 }
             } else {
@@ -68,12 +73,7 @@ class StickyHeaderController(
                     id("view holder ${it.id}")
                     title("this is a View Holder item ${it.id}")
                     listener {
-                        this@StickyHeaderController.items -= it
-                        Toast.makeText(
-                            this@StickyHeaderController.context,
-                            "clicked",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        this@StickyHeaderController.remove(it)
                     }
                 }
             }

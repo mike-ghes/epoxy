@@ -77,16 +77,6 @@ class HeaderPositions(
         return -1
     }
 
-    fun sortAtIndex(index: Int) {
-        val headerPos = list.removeAt(index)
-        val headerIndex = indexOfOrNext(headerPos)
-        if (headerIndex != -1) {
-            list.add(headerIndex, headerPos)
-        } else {
-            list.add(headerPos)
-        }
-    }
-
     override fun onChanged() {
         // There's no hint at what changed, so go through the adapter.
         list.clear()
@@ -134,11 +124,9 @@ class HeaderPositions(
                 while (i != -1 && i < headerCount) {
                     val headerPos = list[i]
                     if (headerPos >= fromPosition && headerPos < fromPosition + itemCount) {
-                        list[i] = headerPos - (toPosition - fromPosition)
-                        sortAtIndex(i)
+                        list[i] = headerPos + (toPosition - fromPosition)
                     } else if (headerPos >= fromPosition + itemCount && headerPos <= toPosition) {
                         list[i] = headerPos - itemCount
-                        sortAtIndex(i)
                     } else {
                         break
                     }
@@ -151,11 +139,9 @@ class HeaderPositions(
                     when {
                         headerPos >= fromPosition && headerPos < fromPosition + itemCount -> {
                             list[i] = headerPos + (toPosition - fromPosition)
-                            sortAtIndex(i)
                         }
                         headerPos in toPosition..fromPosition -> {
                             list[i] = headerPos + itemCount
-                            sortAtIndex(i)
                         }
                         else -> break@loop
                     }
@@ -163,6 +149,7 @@ class HeaderPositions(
                 }
             }
         }
+        list.sort()
     }
 
     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
