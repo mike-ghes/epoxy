@@ -1,3 +1,11 @@
+# 5.1.1
+Remove incorrect ksp symbol validation in processing of @EpoxyModelClass
+
+# 5.1.0
+Updates Kotlin to 1.7.20 and KSP to 1.7.20-1.0.7, as well as the room compiler processing (xprocessing) library to 2.5.0-beta01.
+
+Also deletes the epoxy-paging artifact in favor of the newer epoxy-paging3
+
 # 5.0.0
 This adds support for Kotlin Symbol Processing, while maintaining backwards compatibility with java annotation processing via the xprocessing library from Room.
 
@@ -10,6 +18,9 @@ To use Epoxy with KSP, simply apply it with the ksp gradle plugin instead of kap
 Note that unfortunately the databinding processor does NOT support KSP, simply because Android databinding itself uses KAPT and KSP cannot currently depend on KAPT sources. The code changes are in place to enable KSP with databinding once the databinding plugin from Android supports KSP (although this is unlikely) - alternatively it may be possible to configure the KSP plugin to run after KAPT and depend on its outputs (you're on your own if you want to try that).
 
 Also, parallel processing support was removed because it is not compatible with KSP.
+
+We have also added easy interop with Jetpack Compose via functions in the `epoxy-composeinterop` artifact.
+See the epoxy-composesample module for example usage.
 
 # 4.6.4 (September 23, 2021)
 - Clean up dependency for the experimental epoxy module

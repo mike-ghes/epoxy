@@ -30,7 +30,7 @@ import java.util.HashMap
  *
  * @see OnModelVisibilityStateChangedListener
  */
-class EpoxyVisibilityTracker {
+open class EpoxyVisibilityTracker {
 
     /**
      * Used to listen to [RecyclerView.ItemAnimator] ending animations.
@@ -90,7 +90,7 @@ class EpoxyVisibilityTracker {
      *
      * @param recyclerView The recyclerview that the EpoxyController has its adapter added to.
      */
-    fun attach(recyclerView: RecyclerView) {
+    open fun attach(recyclerView: RecyclerView) {
         attachedRecyclerView = recyclerView
         recyclerView.addOnScrollListener(listener)
         recyclerView.addOnLayoutChangeListener(listener)
@@ -103,7 +103,7 @@ class EpoxyVisibilityTracker {
      *
      * @param recyclerView The recycler view that the EpoxyController has its adapter added to.
      */
-    fun detach(recyclerView: RecyclerView) {
+    open fun detach(recyclerView: RecyclerView) {
         recyclerView.removeOnScrollListener(listener)
         recyclerView.removeOnLayoutChangeListener(listener)
         recyclerView.removeOnChildAttachStateChangeListener(listener)
@@ -245,9 +245,9 @@ class EpoxyVisibilityTracker {
             // without recursively searching through the view children.
             if (groupChildHolder.itemView is RecyclerView) {
                 if (detachEvent) {
-                    processChildRecyclerViewDetached(groupChildHolder.itemView)
+                    processChildRecyclerViewDetached(groupChildHolder.itemView as RecyclerView)
                 } else {
-                    processChildRecyclerViewAttached(groupChildHolder.itemView)
+                    processChildRecyclerViewAttached(groupChildHolder.itemView as RecyclerView)
                 }
             }
             processChild(

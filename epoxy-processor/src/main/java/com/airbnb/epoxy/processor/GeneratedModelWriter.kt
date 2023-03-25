@@ -3,6 +3,7 @@ package com.airbnb.epoxy.processor
 import androidx.annotation.LayoutRes
 import androidx.room.compiler.processing.XElement
 import androidx.room.compiler.processing.XFiler
+import androidx.room.compiler.processing.XMethodElement
 import androidx.room.compiler.processing.XProcessingEnv
 import androidx.room.compiler.processing.XTypeElement
 import androidx.room.compiler.processing.addOriginatingElement
@@ -472,12 +473,19 @@ class GeneratedModelWriter(
                     modelInfo.modelType
                 )
 
-                val (layoutWidth, layoutHeight) = getLayoutDimensions(modelInfo)
-
-                addStatement(
-                    "v.setLayoutParams(new \$T(\$L, \$L))",
-                    ClassNames.ANDROID_MARGIN_LAYOUT_PARAMS, layoutWidth, layoutHeight
-                )
+                getLayoutDimensions(modelInfo)?.let { (layoutWidth, layoutHeight) ->
+                    addStatement(
+                        "v.setLayoutParams(new \$T(\$L, \$L))",
+                        ClassNames.ANDROID_MARGIN_LAYOUT_PARAMS, layoutWidth, layoutHeight
+                    )
+                } ?: run {
+                    beginControlFlow("if (v.getLayoutParams() == null)")
+                        .addStatement(
+                            "throw new \$T(\"Layout params is required to be set for Size.MANUAL\")",
+                            NullPointerException::class.java
+                        )
+                        .endControlFlow()
+                }
 
                 addStatement("return v")
             }
@@ -486,12 +494,13 @@ class GeneratedModelWriter(
         return methods
     }
 
-    private fun getLayoutDimensions(modelInfo: GeneratedModelInfo): Pair<CodeBlock, CodeBlock> {
+    private fun getLayoutDimensions(modelInfo: GeneratedModelInfo): Pair<CodeBlock, CodeBlock>? {
         val matchParent = CodeBlock.of("\$T.MATCH_PARENT", ClassNames.ANDROID_MARGIN_LAYOUT_PARAMS)
         val wrapContent = CodeBlock.of("\$T.WRAP_CONTENT", ClassNames.ANDROID_MARGIN_LAYOUT_PARAMS)
 
         // Returns a pair of width to height
         return when (modelInfo.layoutParams) {
+            ModelView.Size.MANUAL -> null
             ModelView.Size.WRAP_WIDTH_MATCH_HEIGHT -> wrapContent to matchParent
             ModelView.Size.MATCH_WIDTH_MATCH_HEIGHT -> matchParent to matchParent
             // This will be used for Styleable views as the default
@@ -826,7 +835,11 @@ class GeneratedModelWriter(
         // EpoxyModel implementation which calls normal "bind". Doing that would force a full
         // bind!!! So we mustn't do that. So, we only call the super diff binding if we think
         // it's a custom implementation.
-        if (modelImplementsBindWithDiff(classInfo.superClassElement, build(), environment)) {
+        if (modelImplementsBindWithDiff(
+                classInfo.superClassElement,
+                memoizer.baseBindWithDiffMethod
+            )
+        ) {
             addStatement(
                 "super.bind(\$L, \$L)",
                 boundObjectParam.name,
@@ -2089,24 +2102,16 @@ class GeneratedModelWriter(
 
         fun modelImplementsBindWithDiff(
             clazz: XTypeElement,
-            bindWithDiffMethod: MethodSpec,
-            environment: XProcessingEnv
+            baseBindWithDiffMethod: XMethodElement
         ): Boolean {
-            val methodOnClass = Utils.getMethodOnClass(
-                clazz,
-                bindWithDiffMethod,
-                environment
-            ) ?: return false
-
-            if (methodOnClass.isAbstract()) {
-                return false
+            return clazz.getAllMethods().any {
+                it.name == baseBindWithDiffMethod.name &&
+                    !it.isAbstract() &&
+                    it.overrides(
+                        other = baseBindWithDiffMethod,
+                        owner = clazz
+                    )
             }
-
-            val enclosingElement = methodOnClass.enclosingElement as XTypeElement
-
-            // As long as the implementation is not on the base EpoxyModel we consider it a custom
-            // implementation
-            return enclosingElement.qualifiedName != Utils.UNTYPED_EPOXY_MODEL_TYPE
         }
     }
 }

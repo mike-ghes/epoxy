@@ -4,33 +4,26 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import java.lang.CharSequence;
+import java.lang.NullPointerException;
 import java.lang.Number;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.UnsupportedOperationException;
-import kotlin.Deprecated;
-import kotlin.DeprecationLevel;
-import kotlin.ReplaceWith;
 
 /**
  * Generated file. Do not modify!
  */
-@Deprecated(
-    message = "some message",
-    replaceWith = @ReplaceWith(expression = "", imports = {}),
-    level = DeprecationLevel.WARNING
-)
-public class SourceViewModel_ extends EpoxyModel<SourceView> implements GeneratedModel<SourceView>, SourceViewModelBuilder {
-  private OnModelBoundListener<SourceViewModel_, SourceView> onModelBoundListener_epoxyGeneratedModel;
+public class AutoLayoutModelViewManualLayoutParamsModel_ extends EpoxyModel<AutoLayoutModelViewManualLayoutParams> implements GeneratedModel<AutoLayoutModelViewManualLayoutParams>, AutoLayoutModelViewManualLayoutParamsModelBuilder {
+  private OnModelBoundListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> onModelBoundListener_epoxyGeneratedModel;
 
-  private OnModelUnboundListener<SourceViewModel_, SourceView> onModelUnboundListener_epoxyGeneratedModel;
+  private OnModelUnboundListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> onModelUnboundListener_epoxyGeneratedModel;
 
-  private OnModelVisibilityStateChangedListener<SourceViewModel_, SourceView> onModelVisibilityStateChangedListener_epoxyGeneratedModel;
+  private OnModelVisibilityStateChangedListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> onModelVisibilityStateChangedListener_epoxyGeneratedModel;
 
-  private OnModelVisibilityChangedListener<SourceViewModel_, SourceView> onModelVisibilityChangedListener_epoxyGeneratedModel;
+  private OnModelVisibilityChangedListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> onModelVisibilityChangedListener_epoxyGeneratedModel;
 
-  private int foo_Int = 0;
+  private int value_Int = 0;
 
   @Override
   public void addTo(EpoxyController controller) {
@@ -44,40 +37,42 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
   }
 
   @Override
-  public SourceView buildView(ViewGroup parent) {
-    SourceView v = new SourceView(parent.getContext());
-    v.setLayoutParams(new ViewGroup.MarginLayoutParams(ViewGroup.MarginLayoutParams.MATCH_PARENT, ViewGroup.MarginLayoutParams.WRAP_CONTENT));
+  public AutoLayoutModelViewManualLayoutParams buildView(ViewGroup parent) {
+    AutoLayoutModelViewManualLayoutParams v = new AutoLayoutModelViewManualLayoutParams(parent.getContext());
+    if (v.getLayoutParams() == null) {
+      throw new NullPointerException("Layout params is required to be set for Size.MANUAL");
+    }
     return v;
   }
 
   @Override
-  public void handlePreBind(final EpoxyViewHolder holder, final SourceView object,
-      final int position) {
+  public void handlePreBind(final EpoxyViewHolder holder,
+      final AutoLayoutModelViewManualLayoutParams object, final int position) {
     validateStateHasNotChangedSinceAdded("The model was changed between being added to the controller and being bound.", position);
   }
 
   @Override
-  public void bind(final SourceView object) {
+  public void bind(final AutoLayoutModelViewManualLayoutParams object) {
     super.bind(object);
-    object.foo(foo_Int);
+    object.setValue(value_Int);
   }
 
   @Override
-  public void bind(final SourceView object, EpoxyModel previousModel) {
-    if (!(previousModel instanceof SourceViewModel_)) {
+  public void bind(final AutoLayoutModelViewManualLayoutParams object, EpoxyModel previousModel) {
+    if (!(previousModel instanceof AutoLayoutModelViewManualLayoutParamsModel_)) {
       bind(object);
       return;
     }
-    SourceViewModel_ that = (SourceViewModel_) previousModel;
+    AutoLayoutModelViewManualLayoutParamsModel_ that = (AutoLayoutModelViewManualLayoutParamsModel_) previousModel;
     super.bind(object);
 
-    if ((foo_Int != that.foo_Int)) {
-      object.foo(foo_Int);
+    if ((value_Int != that.value_Int)) {
+      object.setValue(value_Int);
     }
   }
 
   @Override
-  public void handlePostBind(final SourceView object, int position) {
+  public void handlePostBind(final AutoLayoutModelViewManualLayoutParams object, int position) {
     if (onModelBoundListener_epoxyGeneratedModel != null) {
       onModelBoundListener_epoxyGeneratedModel.onModelBound(this, object, position);
     }
@@ -92,14 +87,15 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
    * <p>
    * You may clear the listener by setting a null value, or by calling {@link #reset()}
    */
-  public SourceViewModel_ onBind(OnModelBoundListener<SourceViewModel_, SourceView> listener) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ onBind(
+      OnModelBoundListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> listener) {
     onMutation();
     this.onModelBoundListener_epoxyGeneratedModel = listener;
     return this;
   }
 
   @Override
-  public void unbind(SourceView object) {
+  public void unbind(AutoLayoutModelViewManualLayoutParams object) {
     super.unbind(object);
     if (onModelUnboundListener_epoxyGeneratedModel != null) {
       onModelUnboundListener_epoxyGeneratedModel.onModelUnbound(this, object);
@@ -114,14 +110,16 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
    * <p>
    * You may clear the listener by setting a null value, or by calling {@link #reset()}
    */
-  public SourceViewModel_ onUnbind(OnModelUnboundListener<SourceViewModel_, SourceView> listener) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ onUnbind(
+      OnModelUnboundListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> listener) {
     onMutation();
     this.onModelUnboundListener_epoxyGeneratedModel = listener;
     return this;
   }
 
   @Override
-  public void onVisibilityStateChanged(int visibilityState, final SourceView object) {
+  public void onVisibilityStateChanged(int visibilityState,
+      final AutoLayoutModelViewManualLayoutParams object) {
     if (onModelVisibilityStateChangedListener_epoxyGeneratedModel != null) {
       onModelVisibilityStateChangedListener_epoxyGeneratedModel.onVisibilityStateChanged(this, object, visibilityState);
     }
@@ -134,8 +132,8 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
    * The listener will contribute to this model's hashCode state per the {@link
    * com.airbnb.epoxy.EpoxyAttribute.Option#DoNotHash} rules.
    */
-  public SourceViewModel_ onVisibilityStateChanged(
-      OnModelVisibilityStateChangedListener<SourceViewModel_, SourceView> listener) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ onVisibilityStateChanged(
+      OnModelVisibilityStateChangedListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> listener) {
     onMutation();
     this.onModelVisibilityStateChangedListener_epoxyGeneratedModel = listener;
     return this;
@@ -143,7 +141,7 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
 
   @Override
   public void onVisibilityChanged(float percentVisibleHeight, float percentVisibleWidth,
-      int visibleHeight, int visibleWidth, final SourceView object) {
+      int visibleHeight, int visibleWidth, final AutoLayoutModelViewManualLayoutParams object) {
     if (onModelVisibilityChangedListener_epoxyGeneratedModel != null) {
       onModelVisibilityChangedListener_epoxyGeneratedModel.onVisibilityChanged(this, object, percentVisibleHeight, percentVisibleWidth, visibleHeight, visibleWidth);
     }
@@ -156,8 +154,8 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
    * The listener will contribute to this model's hashCode state per the {@link
    * com.airbnb.epoxy.EpoxyAttribute.Option#DoNotHash} rules.
    */
-  public SourceViewModel_ onVisibilityChanged(
-      OnModelVisibilityChangedListener<SourceViewModel_, SourceView> listener) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ onVisibilityChanged(
+      OnModelVisibilityChangedListener<AutoLayoutModelViewManualLayoutParamsModel_, AutoLayoutModelViewManualLayoutParams> listener) {
     onMutation();
     this.onModelVisibilityChangedListener_epoxyGeneratedModel = listener;
     return this;
@@ -166,79 +164,81 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
   /**
    * <i>Optional</i>: Default value is 0
    *
-   * @see SourceView#foo(int)
+   * @see AutoLayoutModelViewManualLayoutParams#setValue(int)
    */
-  public SourceViewModel_ foo(int foo) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ value(int value) {
     onMutation();
-    this.foo_Int = foo;
+    this.value_Int = value;
     return this;
   }
 
-  public int foo() {
-    return foo_Int;
+  public int value() {
+    return value_Int;
   }
 
   @Override
-  public SourceViewModel_ id(long p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(long p0) {
     super.id(p0);
     return this;
   }
 
   @Override
-  public SourceViewModel_ id(@Nullable Number... p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(@Nullable Number... p0) {
     super.id(p0);
     return this;
   }
 
   @Override
-  public SourceViewModel_ id(long p0, long p1) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(long p0, long p1) {
     super.id(p0, p1);
     return this;
   }
 
   @Override
-  public SourceViewModel_ id(@Nullable CharSequence p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(@Nullable CharSequence p0) {
     super.id(p0);
     return this;
   }
 
   @Override
-  public SourceViewModel_ id(@Nullable CharSequence p0, @Nullable CharSequence... p1) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(@Nullable CharSequence p0,
+      @Nullable CharSequence... p1) {
     super.id(p0, p1);
     return this;
   }
 
   @Override
-  public SourceViewModel_ id(@Nullable CharSequence p0, long p1) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ id(@Nullable CharSequence p0, long p1) {
     super.id(p0, p1);
     return this;
   }
 
   @Override
-  public SourceViewModel_ layout(@LayoutRes int p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ layout(@LayoutRes int p0) {
     throw new UnsupportedOperationException("Layout resources are unsupported with programmatic views.");
   }
 
   @Override
-  public SourceViewModel_ spanSizeOverride(@Nullable EpoxyModel.SpanSizeOverrideCallback p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ spanSizeOverride(
+      @Nullable EpoxyModel.SpanSizeOverrideCallback p0) {
     super.spanSizeOverride(p0);
     return this;
   }
 
   @Override
-  public SourceViewModel_ show() {
+  public AutoLayoutModelViewManualLayoutParamsModel_ show() {
     super.show();
     return this;
   }
 
   @Override
-  public SourceViewModel_ show(boolean p0) {
+  public AutoLayoutModelViewManualLayoutParamsModel_ show(boolean p0) {
     super.show(p0);
     return this;
   }
 
   @Override
-  public SourceViewModel_ hide() {
+  public AutoLayoutModelViewManualLayoutParamsModel_ hide() {
     super.hide();
     return this;
   }
@@ -250,12 +250,12 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
   }
 
   @Override
-  public SourceViewModel_ reset() {
+  public AutoLayoutModelViewManualLayoutParamsModel_ reset() {
     onModelBoundListener_epoxyGeneratedModel = null;
     onModelUnboundListener_epoxyGeneratedModel = null;
     onModelVisibilityStateChangedListener_epoxyGeneratedModel = null;
     onModelVisibilityChangedListener_epoxyGeneratedModel = null;
-    this.foo_Int = 0;
+    this.value_Int = 0;
     super.reset();
     return this;
   }
@@ -265,13 +265,13 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
     if (o == this) {
       return true;
     }
-    if (!(o instanceof SourceViewModel_)) {
+    if (!(o instanceof AutoLayoutModelViewManualLayoutParamsModel_)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    SourceViewModel_ that = (SourceViewModel_) o;
+    AutoLayoutModelViewManualLayoutParamsModel_ that = (AutoLayoutModelViewManualLayoutParamsModel_) o;
     if (((onModelBoundListener_epoxyGeneratedModel == null) != (that.onModelBoundListener_epoxyGeneratedModel == null))) {
       return false;
     }
@@ -284,7 +284,7 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
     if (((onModelVisibilityChangedListener_epoxyGeneratedModel == null) != (that.onModelVisibilityChangedListener_epoxyGeneratedModel == null))) {
       return false;
     }
-    if ((foo_Int != that.foo_Int)) {
+    if ((value_Int != that.value_Int)) {
       return false;
     }
     return true;
@@ -297,14 +297,14 @@ public class SourceViewModel_ extends EpoxyModel<SourceView> implements Generate
     _result = 31 * _result + (onModelUnboundListener_epoxyGeneratedModel != null ? 1 : 0);
     _result = 31 * _result + (onModelVisibilityStateChangedListener_epoxyGeneratedModel != null ? 1 : 0);
     _result = 31 * _result + (onModelVisibilityChangedListener_epoxyGeneratedModel != null ? 1 : 0);
-    _result = 31 * _result + foo_Int;
+    _result = 31 * _result + value_Int;
     return _result;
   }
 
   @Override
   public String toString() {
-    return "SourceViewModel_{" +
-        "foo_Int=" + foo_Int +
+    return "AutoLayoutModelViewManualLayoutParamsModel_{" +
+        "value_Int=" + value_Int +
         "}" + super.toString();
   }
 

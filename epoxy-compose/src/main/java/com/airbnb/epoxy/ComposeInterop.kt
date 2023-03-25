@@ -1,12 +1,12 @@
 package com.airbnb.epoxy
 
+import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidView
 
 /**
@@ -26,11 +26,20 @@ class ComposeEpoxyModel(
     private val composeFunction: @Composable () -> Unit,
 ) : EpoxyModelWithView<ComposeView>() {
 
-    override fun buildView(parent: ViewGroup): ComposeView = ComposeView(parent.context).apply {
-        setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-        )
+    private val keyedTags by lazy { SparseArray<Any>(2) }
+
+    /**
+     * add tag to this epoxy model
+     */
+    fun addTag(key: Int, tag: Any) {
+        keyedTags.put(key, tag)
     }
+
+    fun tag(key: Int): Any? {
+        return keyedTags.get(key)
+    }
+
+    override fun buildView(parent: ViewGroup): ComposeView = ComposeView(parent.context)
 
     override fun bind(view: ComposeView) {
         super.bind(view)
@@ -53,16 +62,6 @@ class ComposeEpoxyModel(
 
         return code
     }
-
-    override fun unbind(view: ComposeView) {
-        super.unbind(view)
-        view.disposeComposition()
-    }
-
-    override fun onViewDetachedFromWindow(view: ComposeView) {
-        super.onViewDetachedFromWindow(view)
-        view.disposeComposition()
-    }
 }
 
 fun ModelCollector.composableInterop(
@@ -70,11 +69,21 @@ fun ModelCollector.composableInterop(
     vararg keys: Any,
     composeFunction: @Composable () -> Unit
 ) {
-    add(
-        ComposeEpoxyModel(*keys, composeFunction = composeFunction).apply {
-            id(id)
-        }
-    )
+    add(composeEpoxyModel(id, *keys, composeFunction = composeFunction))
+}
+
+/**
+ * [composeEpoxyModel] can be used directly in cases where more control over the epoxy model
+ * is needed. Eg. When the epoxy model needs to be modified before it's added.
+ */
+fun composeEpoxyModel(
+    id: String,
+    vararg keys: Any,
+    composeFunction: @Composable () -> Unit
+): ComposeEpoxyModel {
+    return ComposeEpoxyModel(*keys, composeFunction = composeFunction).apply {
+        id(id)
+    }
 }
 
 @Composable
@@ -92,6 +101,8 @@ inline fun <reified T : EpoxyModel<*>> EpoxyInterop(
         },
         modifier = modifier,
     ) { view ->
-        (model as EpoxyModel<View>).bind(view.getChildAt(0))
+        val modelView = view.getChildAt(0)
+        (model as EpoxyModel<View>).bind(modelView)
+        (model as GeneratedModel<View>)?.handlePostBind(modelView, 0)
     }
 }

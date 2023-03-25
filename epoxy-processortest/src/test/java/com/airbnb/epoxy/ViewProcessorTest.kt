@@ -150,6 +150,19 @@ class ViewProcessorTest {
     }
 
     @Test
+    fun annotationsAreCopied_java() {
+        assertGeneration(
+            inputFiles = listOf(
+                "ViewProcessorTest/annotationsAreCopied_java/SourceView.java",
+            ),
+            generatedFileNames = listOf(
+                "ViewProcessorTest/annotationsAreCopied_java/SourceViewModel_.java",
+                "ViewProcessorTest/annotationsAreCopied_java/SourceViewModelBuilder.java",
+            ),
+        )
+    }
+
+    @Test
     fun annotationsAreCopied_ksp() {
         assertGeneration(
             inputFiles = listOf(
@@ -1068,6 +1081,14 @@ class ViewProcessorTest {
         assertGeneration(
             "AutoLayoutModelViewMatchParent.java",
             "AutoLayoutModelViewMatchParentModel_.java"
+        )
+    }
+
+    @Test
+    fun testAutoLayoutManualLayoutParams() {
+        assertGeneration(
+            "AutoLayoutModelViewManualLayoutParams.java",
+            "AutoLayoutModelViewManualLayoutParamsModel_.java"
         )
     }
 
