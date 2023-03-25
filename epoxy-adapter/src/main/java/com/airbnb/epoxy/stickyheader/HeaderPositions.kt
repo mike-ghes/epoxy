@@ -24,19 +24,20 @@ class HeaderPositions(
     }
 
     operator fun get(index: Int): Int {
+        recomputeHeadersIfNecessary()
         return headerPositions[index]
     }
 
     fun clear() = headerPositions.clear()
 
-    override fun contains(element: Int): Boolean {
-        return indexOf(element) != -1
-    }
+    private var headersNeedRecompute = false
 
     /**
      * Finds the header index of [position] in [headerPositions] or -1 if it is not found.
      */
     fun indexOf(position: Int): Int {
+        recomputeHeadersIfNecessary()
+
         var low = 0
         var high = headerPositions.size - 1
         while (low <= high) {
@@ -49,11 +50,16 @@ class HeaderPositions(
         }
         return -1
     }
+    override fun contains(element: Int): Boolean {
+        recomputeHeadersIfNecessary()
+        return indexOf(element) != -1
+    }
 
     /**
      * Finds the header index of [position] in [headerPositions] or the one before it if not found
      */
     fun indexOfOrBefore(position: Int): Int {
+        recomputeHeadersIfNecessary()
         var low = 0
         var high = headerPositions.size - 1
         while (low <= high) {
@@ -72,6 +78,7 @@ class HeaderPositions(
      * Finds the header index of [position] or if not found, the one after it in [headerPositions].
      */
     fun indexOfOrNext(position: Int): Int {
+        recomputeHeadersIfNecessary()
         var low = 0
         var high = headerPositions.size - 1
         while (low <= high) {
@@ -100,6 +107,8 @@ class HeaderPositions(
     }
 
     override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+        if (headersNeedRecompute) return
+
         var headerCount = headerPositions.size
         if (headerCount > 0) {
             // Remove headers.
@@ -123,6 +132,7 @@ class HeaderPositions(
     }
 
     override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+        if (headersNeedRecompute) return
         // Shift moved headers by toPosition - fromPosition.
         // Shift headers in-between by -itemCount (reverse if upwards).
         val headerCount = headerPositions.size
@@ -161,27 +171,25 @@ class HeaderPositions(
     }
 
     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-        // Shift headers below down.
-        val headerCount = headerPositions.size
-        if (headerCount > 0) {
-            var i = indexOfOrNext(positionStart)
-            while (i != -1 && i < headerCount) {
-                headerPositions[i] = headerPositions[i] + itemCount
-                i++
-            }
-        }
+        /**
+         * Since this new range could contains a header, we need to check `delegate.isStickyHeader()`.
+         * However, when the dataset changes, there might be multiple ranges that are simultaneously
+         * inserted or removed. It would be unsafe to call `delegate.isStickyHeader()` right now
+         * as these messages may not be caught up to the dataset yet. We must wait until we've
+         * processed all changes before attempting to access the dataset.
+         *
+         * So we mark headerPositions as dirty and recompute them whenever they are next accessed
+         * as if `onChanged` had occurred. This issue is unique to onInserted because:
+         *  - onChanged: should not be triggered simultaneously with other events
+         *  - onRemoved/onMoved: does not require checking for new headers
+         */
+        headersNeedRecompute = true
+    }
 
-        // Add new headers.
-        for (i in positionStart until positionStart + itemCount) {
-            val isSticky = delegate.isStickyHeader(i)
-            if (isSticky) {
-                val headerIndex = indexOfOrNext(i)
-                if (headerIndex != -1) {
-                    headerPositions.add(headerIndex, i)
-                } else {
-                    headerPositions.add(i)
-                }
-            }
+    fun recomputeHeadersIfNecessary() {
+        if (headersNeedRecompute) {
+            headersNeedRecompute = false
+            onChanged()
         }
     }
 }

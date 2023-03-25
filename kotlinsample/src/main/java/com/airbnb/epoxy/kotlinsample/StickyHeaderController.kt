@@ -38,7 +38,7 @@ class StickyHeaderController(
 
     fun remove(item: Item) {
         // Removing an item is fine but trying to add at the same time will crash
-        items = items - item //+ Item(nextId++)
+        items = items - item + Item(nextId++)
     }
 
     override fun buildModels() {
