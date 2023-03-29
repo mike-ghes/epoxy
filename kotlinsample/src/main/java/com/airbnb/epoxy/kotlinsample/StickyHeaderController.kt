@@ -81,6 +81,5 @@ class StickyHeaderController(
     }
 
     // Feel feel to use any logic here to determine if the [position] is sticky view or not
-    override fun isStickyHeader(position: Int) =
-        adapter.getModelAtPosition(position) is StickyItemEpoxyHolder
+    override fun isStickyHeader(position: Int) = adapter.getModelAtPosition(position) is StickyItemEpoxyHolder
 }
